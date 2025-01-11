@@ -6,6 +6,7 @@ import getAmenities from "../services/amenities/getAmenities.js";
 import updateAmenityById from "../services/amenities/updateAmenityById.js";
 import auth from "../middlewares/auth.js";
 import { NotFoundError } from "../utils/customErrors.js";
+import { validateRequiredFields } from "../middlewares/validationMiddleware.js";
 
 const router = Router();
 
@@ -31,14 +32,19 @@ router.get("/:id", async (req, res, next) => {
   }
 });
 
-router.post("/", auth, async (req, res, next) => {
-  try {
-    const amenity = await createAmenity(req.body);
-    res.status(201).json(amenity);
-  } catch (error) {
-    next(error);
+router.post(
+  "/",
+  auth,
+  validateRequiredFields(["name"]),
+  async (req, res, next) => {
+    try {
+      const amenity = await createAmenity(req.body);
+      res.status(201).json(amenity);
+    } catch (error) {
+      next(error);
+    }
   }
-});
+);
 
 router.put("/:id", auth, async (req, res, next) => {
   try {

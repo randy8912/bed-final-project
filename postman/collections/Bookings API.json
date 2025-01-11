@@ -370,7 +370,7 @@
               },
               "response": [
                 {
-                  "id": "a7860b6f-0cd7-471e-a489-763bfed1c8ec",
+                  "id": "e5678901-23f0-1234-5678-9abcdef01234",
                   "name": "User deleted successfully",
                   "originalRequest": {
                     "method": "DELETE",
@@ -388,7 +388,7 @@
                       "variable": [
                         {
                           "key": "userId",
-                          "value": "c3456789-01de-f012-3456-789abcdef012",
+                          "value": "e5678901-23f0-1234-5678-9abcdef01234",
                           "description": "(Required) "
                         }
                       ]
@@ -407,7 +407,7 @@
                   "body": ""
                 },
                 {
-                  "id": "e6889096-3435-4914-8e4f-65c4ae2cec63",
+                  "id": "e5678901-23f0-1234-5678-9abcdef01234",
                   "name": "User not found",
                   "originalRequest": {
                     "method": "DELETE",
@@ -425,7 +425,7 @@
                       "variable": [
                         {
                           "key": "userId",
-                          "value": "in",
+                          "value": "e5678901-23f0-1234-5678-9abcdef01234",
                           "description": "(Required) "
                         }
                       ]
@@ -553,7 +553,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"username\": \"Alex\",\n  \"password\": \"password123\",\n  \"name\": \"John Doe\",\n  \"email\": \"johndoe@example.com\",\n  \"phoneNumber\": \"123-456-7890\",\n  \"profilePicture\": \"https://global-uploads.webflow.com/5eecfecbe625d195e35b89f2/624bfb093da7d92733c001c0_Ignacio%20Villafruela%20Rodr%C3%ADguez.jpg\"\n}",
+              "raw": "{\n  \"username\": \"Alex\",\n  \"password\": \"password123\",\n  \"name\": \"John Doe\",\n  \"email\": \"newjohndoe@example.com\",\n  \"phoneNumber\": \"123-456-7890\",\n  \"profilePicture\": \"https://global-uploads.webflow.com/5eecfecbe625d195e35b89f2/624bfb093da7d92733c001c0_Ignacio%20Villafruela%20Rodr%C3%ADguez.jpg\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -1156,7 +1156,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"username\": \"newhosty \",\n  \"password\": \"password123\",\n  \"name\": \"John Doe\",\n  \"email\": \"johndoe@email.com\",\n  \"phoneNumber\": \"+11234567890\",\n  \"profilePicture\": \"https://example.com/images/johndoe.jpg\",\n  \"aboutMe\": \"I'm a passionate traveler who loves to share my home with fellow explorers. Welcome!\"\n}",
+              "raw": "{\n  \"username\": \"newhosty \",\n  \"password\": \"password123\",\n  \"name\": \"John Doe\",\n  \"email\": \"johndoe2@email.com\",\n  \"phoneNumber\": \"+11234567890\",\n  \"profilePicture\": \"https://example.com/images/johndoe.jpg\",\n  \"aboutMe\": \"I'm a passionate traveler who loves to share my home with fellow explorers. Welcome!\"\n}",
               "options": {
                 "raw": {
                   "language": "json"

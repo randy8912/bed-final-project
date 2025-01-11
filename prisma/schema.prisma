@@ -8,11 +8,11 @@ generator client {
 }
 
 model User {
-  id            String    @id @default(uuid())
-  username      String    @unique
+  id            String     @id @default(uuid())
+  username      String     @unique
   password      String
   name          String
-  email         String    @unique
+  email         String     @unique
   phoneNumber   String
   profilePicture String
   bookings      Booking[]
@@ -20,11 +20,11 @@ model User {
 }
 
 model Host {
-  id            String    @id @default(uuid())
-  username      String    @unique
+  id            String     @id @default(uuid())
+  username      String     @unique
   password      String
   name          String
-  email         String    @unique
+  email         String     @unique
   phoneNumber   String
   profilePicture String
   aboutMe       String
@@ -47,7 +47,7 @@ model Property {
   bathRoomCount Int
   maxGuestCount Int
   rating        Int
-  host          Host       @relation(fields: [hostId], references: [id])
+  host          Host       @relation(fields: [hostId], references: [id], onDelete: Cascade) // Cascade delete property when host is deleted
   hostId        String
   amenities     Amenity[]  @relation("PropertyAmenities")
   bookings      Booking[]
@@ -55,24 +55,24 @@ model Property {
 }
 
 model Booking {
-  id             String    @id @default(uuid())
+  id             String     @id @default(uuid())
   checkinDate    DateTime
   checkoutDate   DateTime
   numberOfGuests Int
   totalPrice     Float
   bookingStatus  String
-  user           User      @relation(fields: [userId], references: [id])
+  user           User       @relation(fields: [userId], references: [id], onDelete: Cascade) // Cascade delete booking when user is deleted
   userId         String
-  property       Property  @relation(fields: [propertyId], references: [id])
+  property       Property   @relation(fields: [propertyId], references: [id], onDelete: Cascade) // Cascade delete booking when property is deleted
   propertyId     String
 }
 
 model Review {
-  id          String    @id @default(uuid())
+  id          String     @id @default(uuid())
   rating      Int
   comment     String
-  user        User      @relation(fields: [userId], references: [id])
+  user        User       @relation(fields: [userId], references: [id], onDelete: Cascade) // Cascade delete review when user is deleted
   userId      String
-  property    Property  @relation(fields: [propertyId], references: [id])
+  property    Property   @relation(fields: [propertyId], references: [id], onDelete: Cascade) // Cascade delete review when property is deleted
   propertyId  String
 }

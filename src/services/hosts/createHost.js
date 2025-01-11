@@ -2,6 +2,8 @@ import { PrismaClient } from "@prisma/client";
 import { v4 as uuidv4 } from "uuid";
 import bcrypt from "bcrypt";
 
+const prisma = new PrismaClient();
+
 const createHost = async ({
   username,
   password,
@@ -11,25 +13,39 @@ const createHost = async ({
   profilePicture,
   aboutMe,
 }) => {
-  const hashedPassword = await bcrypt.hash(password, 10);
+  // Validate input
+  if (!username || !password || !email) {
+    const error = new Error("Username, password, and email are required.");
+    error.statusCode = 400;
+    throw error;
+  }
 
-  const newHost = {
-    id: uuidv4(),
-    username,
-    password: hashedPassword,
-    name,
-    email,
-    phoneNumber,
-    profilePicture,
-    aboutMe,
-  };
+  try {
+    const hashedPassword = await bcrypt.hash(password, 10);
 
-  const prisma = new PrismaClient();
-  const host = await prisma.host.create({
-    data: newHost,
-  });
+    const newHost = {
+      id: uuidv4(),
+      username,
+      password: hashedPassword,
+      name,
+      email,
+      phoneNumber,
+      profilePicture,
+      aboutMe,
+    };
 
-  return host;
+    return await prisma.host.create({ data: newHost });
+  } catch (error) {
+    if (error.code === "P2002") {
+      throw {
+        statusCode: 400,
+        message:
+          "Unique constraint violation: Username or email already exists.",
+      };
+    }
+    console.error("Error creating host:", error.message);
+    throw { statusCode: 500, message: "Internal server error" };
+  }
 };
 
 export default createHost;

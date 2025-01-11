@@ -6,6 +6,7 @@ import getBookings from "../services/bookings/getBookings.js";
 import updateBookingById from "../services/bookings/updateBookingById.js";
 import auth from "../middlewares/auth.js";
 import { NotFoundError } from "../utils/customErrors.js";
+import { validateRequiredFields } from "../middlewares/validationMiddleware.js";
 
 const router = Router();
 
@@ -32,14 +33,27 @@ router.get("/:id", async (req, res, next) => {
   }
 });
 
-router.post("/", auth, async (req, res, next) => {
-  try {
-    const booking = await createBooking(req.body);
-    res.status(201).json(booking);
-  } catch (error) {
-    next(error);
+router.post(
+  "/",
+  auth,
+  validateRequiredFields([
+    "checkinDate",
+    "checkoutDate",
+    "numberOfGuests",
+    "totalPrice",
+    "bookingStatus",
+    "userId",
+    "propertyId",
+  ]),
+  async (req, res, next) => {
+    try {
+      const booking = await createBooking(req.body);
+      res.status(201).json(booking);
+    } catch (error) {
+      next(error);
+    }
   }
-});
+);
 
 router.put("/:id", auth, async (req, res, next) => {
   try {

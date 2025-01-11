@@ -1,18 +1,27 @@
 import { PrismaClient } from "@prisma/client";
 import { v4 as uuidv4 } from "uuid";
 
+const prisma = new PrismaClient();
+
 const createAmenity = async ({ name }) => {
-  const newAmenity = {
-    id: uuidv4(),
-    name,
-  };
+  // Validate input
+  if (!name) {
+    const error = new Error("Amenity name is required.");
+    error.statusCode = 400;
+    throw error;
+  }
 
-  const prisma = new PrismaClient();
-  const amenity = await prisma.amenity.create({
-    data: newAmenity,
-  });
+  try {
+    const newAmenity = {
+      id: uuidv4(),
+      name,
+    };
 
-  return amenity;
+    return await prisma.amenity.create({ data: newAmenity });
+  } catch (error) {
+    console.error("Error creating amenity:", error.message);
+    throw { statusCode: 500, message: "Internal server error" };
+  }
 };
 
 export default createAmenity;

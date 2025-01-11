@@ -18,13 +18,20 @@ router.get("/", async (req, res, next) => {
   }
 });
 
-router.post("/", auth, async (req, res, next) => {
+router.post("/", auth, async (req, res) => {
   try {
     const { rating, comment, userId, propertyId } = req.body;
-    const review = await createReview({ rating, comment, userId, propertyId });
+
+    // Validate required fields
+    if (!rating || !comment || !userId || !propertyId) {
+      return res.status(400).json({ error: "All fields are required" });
+    }
+
+    const review = await createReview(rating, comment, userId, propertyId);
     res.status(201).json(review);
   } catch (error) {
-    next(error);
+    console.error("Error creating review:", error);
+    res.status(500).json({ error: error.message });
   }
 });
 
