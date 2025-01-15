@@ -10,10 +10,12 @@ import { validateRequiredFields } from "../middlewares/validationMiddleware.js";
 
 const router = Router();
 
-router.get("/", async (req, res, next) => {
+router.get("/", auth, async (req, res, next) => {
   try {
     const users = await getUsers(req.query);
-    res.status(200).json(users);
+    // Exclude sensitive fields like password
+    const filteredUsers = users.map(({ password, ...rest }) => rest);
+    res.status(200).json(filteredUsers);
   } catch (error) {
     next(error);
   }
@@ -21,6 +23,7 @@ router.get("/", async (req, res, next) => {
 
 router.post(
   "/",
+  auth,
   validateRequiredFields(["username", "password", "email"]),
   async (req, res, next) => {
     try {
@@ -43,14 +46,16 @@ router.post(
   }
 );
 
-router.get("/:id", async (req, res, next) => {
+router.get("/:id", auth, async (req, res, next) => {
   try {
     const { id } = req.params;
     const user = await getUserById(id);
     if (!user) {
       throw new NotFoundError(`User with id ${id} not found`);
     }
-    res.json(user);
+    // Exclude sensitive fields like password
+    const { password, ...userWithoutPassword } = user;
+    res.json(userWithoutPassword);
   } catch (error) {
     next(error);
   }
@@ -58,36 +63,14 @@ router.get("/:id", async (req, res, next) => {
 
 router.delete("/:id", auth, async (req, res, next) => {
   try {
-    // Log the incoming DELETE request details
-    console.log("Incoming DELETE request:");
-    console.log("Params:", req.params);
-    console.log("Headers:", req.headers);
-    console.log("Authorization Header:", req.headers.authorization);
-
     const { id } = req.params;
-
-    // Log before attempting to delete the user
-    console.log(`Attempting to delete user with id: ${id}`);
-
-    // Call the deleteUserById function and log the result
     const user = await deleteUserById(id);
-
-    // Check if user exists and log the result
     if (!user) {
-      console.log(`User with id ${id} not found in database.`);
       throw new NotFoundError(`User with id ${id} not found`);
     }
-
-    // Log the successful deletion
-    console.log(`User with id ${id} successfully deleted from the database.`);
     res.status(200).json({ message: `User with id ${id} deleted` });
   } catch (error) {
-    // Log the error details for better debugging
-    console.error("Error occurred while attempting to delete user:");
-    console.error("Error message:", error.message);
-    console.error("Stack trace:", error.stack);
-
-    next(error); // Pass the error to the next middleware
+    next(error);
   }
 });
 

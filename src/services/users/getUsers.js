@@ -26,7 +26,7 @@ const getUsers = async (filters) => {
   // Filter by email
   if (email) {
     query.where.email = {
-      contains: email,
+      equals: email,
     };
   }
 

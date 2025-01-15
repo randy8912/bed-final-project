@@ -18,10 +18,11 @@ router.post("/", async (req, res, next) => {
         .json({ message: "Username and password are required." });
     }
 
-    const user = await prisma.user.findUnique({ where: { username } });
-    const host = await prisma.host.findUnique({ where: { username } });
+    // Check both users and hosts for login
+    const account =
+      (await prisma.user.findUnique({ where: { username } })) ||
+      (await prisma.host.findUnique({ where: { username } }));
 
-    const account = user || host;
     if (!account) {
       throw new UnauthorizedError("Invalid username or password.");
     }
@@ -41,7 +42,7 @@ router.post("/", async (req, res, next) => {
       account: {
         id: account.id,
         username: account.username,
-        type: user ? "user" : "host",
+        type: account.email ? "user" : "host",
       },
     });
   } catch (error) {

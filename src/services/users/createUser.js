@@ -12,7 +12,6 @@ const createUser = async (
   phoneNumber,
   profilePicture
 ) => {
-  // Validate input
   if (!username || !password || !email) {
     const error = new Error(
       "Username, password, and email are required fields."
@@ -37,13 +36,8 @@ const createUser = async (
     return await prisma.user.create({ data: newUser });
   } catch (error) {
     if (error.code === "P2002") {
-      throw {
-        statusCode: 400,
-        message:
-          "Unique constraint violation: Username or email already exists.",
-      };
+      throw { statusCode: 400, message: "Username or email already exists." };
     }
-    console.error("Error creating user:", error.message);
     throw { statusCode: 500, message: "Internal server error" };
   }
 };

@@ -14,13 +14,10 @@ const logger = createLogger({
   ],
 });
 
-// For environments other than production, add colorized console logs
-if (process.env.NODE_ENV !== "production") {
-  logger.add(
-    new transports.Console({
-      format: format.combine(format.colorize(), format.simple()),
-    })
-  );
-}
+// Log errors with detailed information
+logger.error = (message, req) => {
+  const logMessage = `[${req.method} ${req.originalUrl}] ${message}`;
+  logger.log({ level: "error", message: logMessage });
+};
 
 export default logger;

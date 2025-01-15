@@ -8,23 +8,17 @@ const getProperties = async (filters) => {
   const query = {
     where: {},
     include: {
-      reviews: true, // Include reviews as per assignment requirements
-      bookings: true, // Include bookings as per assignment requirements
+      reviews: true,
+      bookings: true,
     },
   };
 
-  // Filter by location
   if (location) {
-    query.where.location = {
-      contains: location, // Partial match for location
-    };
+    query.where.location = { contains: location };
   }
 
-  // Filter by price per night
   if (pricePerNight) {
-    query.where.pricePerNight = {
-      lte: parseFloat(pricePerNight), // Prices less than or equal to the given value
-    };
+    query.where.pricePerNight = { equals: parseFloat(pricePerNight) };
   }
 
   return prisma.property.findMany(query);

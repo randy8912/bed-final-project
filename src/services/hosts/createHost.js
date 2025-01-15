@@ -37,10 +37,10 @@ const createHost = async ({
     return await prisma.host.create({ data: newHost });
   } catch (error) {
     if (error.code === "P2002") {
+      // Prisma unique constraint violation
       throw {
         statusCode: 400,
-        message:
-          "Unique constraint violation: Username or email already exists.",
+        message: "Username or email already exists.",
       };
     }
     console.error("Error creating host:", error.message);

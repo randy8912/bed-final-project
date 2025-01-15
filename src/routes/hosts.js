@@ -10,24 +10,12 @@ import { validateRequiredFields } from "../middlewares/validationMiddleware.js";
 
 const router = Router();
 
-router.get("/", async (req, res, next) => {
+router.get("/", auth, async (req, res, next) => {
   try {
-    const filters = req.query;
-    const hosts = await getHosts(filters);
-    res.status(200).json(hosts);
-  } catch (error) {
-    next(error);
-  }
-});
-
-router.get("/:id", async (req, res, next) => {
-  try {
-    const { id } = req.params;
-    const host = await getHostById(id);
-    if (!host) {
-      throw new NotFoundError(`Host with id ${id} not found`);
-    }
-    res.json(host);
+    const hosts = await getHosts(req.query);
+    // Exclude sensitive fields like password
+    const filteredHosts = hosts.map(({ password, ...rest }) => rest);
+    res.status(200).json(filteredHosts);
   } catch (error) {
     next(error);
   }
@@ -35,7 +23,8 @@ router.get("/:id", async (req, res, next) => {
 
 router.post(
   "/",
-  validateRequiredFields(["username", "password"]),
+  auth,
+  validateRequiredFields(["username", "password", "email"]),
   async (req, res, next) => {
     try {
       const host = await createHost(req.body);
@@ -46,14 +35,16 @@ router.post(
   }
 );
 
-router.put("/:id", auth, async (req, res, next) => {
+router.get("/:id", auth, async (req, res, next) => {
   try {
     const { id } = req.params;
-    const updatedHost = await updateHostById(id, req.body);
-    if (!updatedHost) {
+    const host = await getHostById(id);
+    if (!host) {
       throw new NotFoundError(`Host with id ${id} not found`);
     }
-    res.status(200).json({ message: `Host with id ${id} updated` });
+    // Exclude sensitive fields like password
+    const { password, ...hostWithoutPassword } = host;
+    res.json(hostWithoutPassword);
   } catch (error) {
     next(error);
   }
@@ -61,31 +52,27 @@ router.put("/:id", auth, async (req, res, next) => {
 
 router.delete("/:id", auth, async (req, res, next) => {
   try {
-    // Log the incoming request and parameters
-    console.log("Incoming DELETE request for host:");
-    console.log("Params:", req.params);
-    console.log("Headers:", req.headers);
-
     const { id } = req.params;
-
-    // Log before attempting to delete the host
-    console.log(`Attempting to delete host with id: ${id}`);
-
     const result = await deleteHostById(id);
-
-    // Check if host exists and log the outcome
     if (!result) {
-      console.log(`Host with id ${id} not found.`);
       throw new NotFoundError(`Host with id ${id} not found`);
     }
-
-    // Log success before sending response
-    console.log(`Host with id ${id} successfully deleted.`);
     res.status(200).json({ message: `Host with id ${id} deleted` });
   } catch (error) {
-    // Log error details
-    console.error("Error occurred while deleting host:", error.message);
-    console.error(error.stack);
+    next(error);
+  }
+});
+
+router.put("/:id", auth, async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const updatedHost = req.body;
+    const result = await updateHostById(id, updatedHost);
+    if (!result) {
+      throw new NotFoundError(`Host with id ${id} not found`);
+    }
+    res.status(200).json({ message: `Host with id ${id} updated` });
+  } catch (error) {
     next(error);
   }
 });
